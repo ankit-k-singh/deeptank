@@ -8,7 +8,7 @@ from PIL import Image
 import time
 import StringIO
 
-def get_images_for_tank(name, driver):
+def get_images_for_tank(name, driver, done_callback):
 
   driver.get("http://tanks.gg/wot/tank/{0}#tab:model".format(name))
 
@@ -58,16 +58,21 @@ def get_images_for_tank(name, driver):
       image.save("images/{0}_{1}.png".format(name, i), "PNG")
 
     print "Done with {0}".format(name)
+    done_callback(driver)
 
   except Exception as e:
     print "Ups ", e
     pass
 
 
+def download_next_tank(driver):
+
+  if len(tank_names) > 1:
+    tank_name = tank_names.pop()
+
+    get_images_for_tank(tank_name, driver, download_next_tank)
+
 if __name__ == '__main__':
-
-
-
 
   driver = webdriver.Chrome()
   driver.set_window_size(1440, 900)
@@ -75,7 +80,7 @@ if __name__ == '__main__':
 
   tank_names = [line.strip('\n') for line in open("tanks_blitz.txt", "r")]
 
-  #for tank_name in tank_names:
-  get_images_for_tank(tank_names[0], driver)
+  # Recursively download all tanks
+  download_next_tank(driver)
 
   driver.close()
