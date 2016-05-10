@@ -23,9 +23,8 @@ def track(asd=None):
     if not cap.isOpened():
         sys.exit(1)
 
-
     frame_counter = 0
-    num_columns = 2
+    num_columns = cv2.getTrackbarPos("COLUMNS", "Trackbars") #2
     fps = 100
     grid_width = 1280
     grid_height = 720
@@ -113,6 +112,7 @@ if __name__ == '__main__':
     cv2.createTrackbar("S_MAX", "Trackbars", redUpper[1], 255, track)
     cv2.createTrackbar("V_MIN", "Trackbars", redLower[2], 255, track)
     cv2.createTrackbar("V_MAX", "Trackbars", redUpper[2], 255, track)
+    cv2.createTrackbar("COLUMNS", "Trackbars", 2, 20, track)
 
 
     track()
