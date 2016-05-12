@@ -1,5 +1,6 @@
 samples/**
-dataset/images/**
+dataset/tanks/**
+dataset/training_data/**
 dataset/backgrounds/**
 
 # Byte-compiled / optimized / DLL files
