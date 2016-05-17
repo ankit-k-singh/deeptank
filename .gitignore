@@ -2,6 +2,7 @@ samples/**
 dataset/tanks/**
 dataset/training_data/**
 dataset/backgrounds/**
+model.ckpt-157585
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

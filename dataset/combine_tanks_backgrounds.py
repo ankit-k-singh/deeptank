@@ -21,7 +21,7 @@ def combine_tanks_backgrounds(tank_name, args):
             background_image = cv2.imread(random.choice(BACKGROUNDS), cv2.IMREAD_COLOR)
 
             # Resize tank image to fit the 299x299 shape of the net and crop center
-            # of image for a square image
+            # of image for a square imag
             offset_x = random.randint(0, 0)
             offset_y = random.randint(20, 100)
             scale_factor = random.uniform(0.23, 0.27)
@@ -29,24 +29,32 @@ def combine_tanks_backgrounds(tank_name, args):
             transformation = np.float32([[scale_factor, 0, -120 + offset_x],[0, scale_factor, offset_y]])
             square_image = cv2.warpAffine(image, transformation, OUTPUT_SHAPE, borderValue=[255, 255, 255])
 
-            # Randomly crop background to mach output shape of 299x299
-            image_size_diff = np.subtract(background_image.shape[:2], OUTPUT_SHAPE)
-            rand_x = random.randint(0, image_size_diff[1])
-            rand_y = random.randint(0, image_size_diff[0])
-            background_image = background_image[rand_y:rand_y + OUTPUT_SHAPE[1], rand_x:rand_x + OUTPUT_SHAPE[0]]
+            # Augmentation
+            # Create a brighter version of the tank image
+            brighter_image = square_image + 30
+
+            # Down-size background and randomly crop background to mach output shape of 299x299
+            aspect_ratio = background_image.shape[1] / background_image.shape[0]
+            background_image = cv2.resize(background_image, (OUTPUT_SHAPE[0] * aspect_ratio, OUTPUT_SHAPE[0]))
+
+            offset_x = random.randint(0, background_image.shape[1] - OUTPUT_SHAPE[1])
+            background_image = background_image[0:0 + OUTPUT_SHAPE[1], offset_x:offset_x + OUTPUT_SHAPE[0]]
 
             # add tank image to the background
             mask = square_image > 200
             square_image[mask] = background_image[mask]
+            brighter_image[mask] = background_image[mask]
 
             # And save it
             save_dir = os.path.join(args.output_dir, tank_name)
-            new_file_name = "{0}_{1}.png".format(tank_name, frame_counter)
+            new_file_name_1 = "{0}_{1}.png".format(tank_name, frame_counter)
+            new_file_name_2 = "{0}_{1}.png".format(tank_name, frame_counter + 1)
             if not os.path.exists(save_dir):
                 os.makedirs(save_dir)
 
-            cv2.imwrite(os.path.join(save_dir, new_file_name), square_image)
-            frame_counter += 1
+            cv2.imwrite(os.path.join(save_dir, new_file_name_1), square_image)
+            cv2.imwrite(os.path.join(save_dir, new_file_name_2), brighter_image)
+            frame_counter += 2
 
     print "Done combining ", tank_name
 
